@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2037
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EniroMapApi", "EniroMapApi\EniroMapApi.csproj", "{6B19913B-1E5A-4BF9-9812-B53AD4231703}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6B19913B-1E5A-4BF9-9812-B53AD4231703}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B19913B-1E5A-4BF9-9812-B53AD4231703}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B19913B-1E5A-4BF9-9812-B53AD4231703}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B19913B-1E5A-4BF9-9812-B53AD4231703}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9C0F9FF7-AFB2-4B0F-8D74-C835E92AE38C}
+	EndGlobalSection
+EndGlobal
