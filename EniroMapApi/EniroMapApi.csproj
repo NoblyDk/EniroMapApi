@@ -2,6 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Company>Nobly ApS</Company>
+    <Authors>Paw Madsen</Authors>
+    <Description>A Simple C# Wrapper around two of Eniro's API calls.
+Geocoding and Routing</Description>
+    <PackageTags>Map Krak Eniro Route Routing Geocoding</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
 
 </Project>
