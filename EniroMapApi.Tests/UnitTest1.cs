@@ -13,7 +13,7 @@ namespace EniroMapApi.Tests
             {
                 Country = CountryEnum.DK,
                 Type = TypeEnum.Address,
-                Name = "Glibingvej 1, 8350 Hundslund"
+                Name = "Falen 18F, 5000 Odense C"
             });
             Assert.True(result != null);
         }
@@ -21,25 +21,26 @@ namespace EniroMapApi.Tests
         [Fact]
         public async void TestRouting()
         {
-            var from = await new EniroMapClient().GeocodingAsync(new GeocodingParameters()
+            var client = new EniroMapClient();
+            var from = await client.GeocodingAsync(new GeocodingParameters()
             {
                 Country = CountryEnum.DK,
                 Type = TypeEnum.Address,
-                Name = "Glibingvej 1, 8350 Hundslund"
+                Name = "Falen 18D, 5000 Odense C"
             });
-            var to = await new EniroMapClient().GeocodingAsync(new GeocodingParameters()
+            var to = await client.GeocodingAsync(new GeocodingParameters()
             {
                 Country = CountryEnum.DK,
                 Type = TypeEnum.Address,
                 Name = "J. B. Winsløws Vej 4, 5000 Odense"
             });
-            var result = await new EniroMapClient().RoutingAsync(new RoutingParameters()
+            var result = await client.RoutingAsync(new RoutingParameters()
             {
-                From = from.Search.GeocodingResponse.Locations.FirstOrDefault().PlacementCoordinate,
-                To = to.Search.GeocodingResponse.Locations.FirstOrDefault().PlacementCoordinate,
+                From = from.Search.GeocodingResponse.Locations.FirstOrDefault().AccessRoadCoordinate,
+                To = to.Search.GeocodingResponse.Locations.FirstOrDefault().AccessRoadCoordinate,
                 Pref = PrefEnum.Fastest
             });
-            Assert.True(result != null);
+            Assert.True(result.TotalLength == 1441);
         }
     }
 }
