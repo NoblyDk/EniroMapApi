@@ -22,11 +22,11 @@ namespace EniroMapApi
 			};
 		}
 
-		public async Task<GeocodingResult> GeocodingAsync(GeocodingParameters geocodingParameters)
+		public async Task<GeocodingResult> GeocodingAsync(CountryEnum country, TypeEnum type, string name)
 		{
 
 			var queryString = "";
-			switch (geocodingParameters.Country)
+			switch (country)
 			{
 				case CountryEnum.SE:
 					queryString += "?country=se";
@@ -47,7 +47,7 @@ namespace EniroMapApi
 					throw new ArgumentOutOfRangeException();
 			}
 
-			switch (geocodingParameters.Type)
+			switch (type)
 			{
 				case TypeEnum.Any:
 					queryString += "&type=any";
@@ -66,7 +66,7 @@ namespace EniroMapApi
 					break;
 			}
 
-			queryString += $"&name={geocodingParameters.Name}";
+			queryString += $"&name={name}";
 			queryString += $"&contentType=json";
 			var result = await _httpClient.GetStringAsync($"geocode/{queryString}");
 			return JsonConvert.DeserializeObject<GeocodingResult>(result);
@@ -74,11 +74,11 @@ namespace EniroMapApi
 
 		}
 
-		public async Task<RoutingResult> RoutingAsync(RoutingParameters routingParameters)
+		public async Task<RoutingResult> RoutingAsync(PrefEnum pref, string toX, string toY, string fromX, string fromY)
 		{
 
 			var queryString = "";
-			switch (routingParameters.Pref)
+			switch (pref)
 			{
 				case PrefEnum.Fastest:
 					queryString += "?pref=fastest";
@@ -90,7 +90,7 @@ namespace EniroMapApi
 					throw new ArgumentOutOfRangeException();
 			}
 
-			queryString += $"&waypoints={routingParameters.To.X},{routingParameters.To.Y};{routingParameters.From.X},{routingParameters.From.Y}";
+			queryString += $"&waypoints={toX},{toY};{fromX},{fromY}";
 			queryString += $"&instr=false";
 			queryString += $"&geo=false";
 			queryString += $"&contentType=json";
