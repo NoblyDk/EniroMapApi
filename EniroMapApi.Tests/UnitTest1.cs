@@ -15,7 +15,7 @@ namespace EniroMapApi.Tests
                 Type = TypeEnum.Address,
                 Name = "Falen 18F, 5000 Odense C"
             });
-            Assert.True(result != null);
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -36,11 +36,11 @@ namespace EniroMapApi.Tests
             });
             var result = await client.RoutingAsync(new RoutingParameters()
             {
-                From = from.Search.GeocodingResponse.Locations.FirstOrDefault().AccessRoadCoordinate,
-                To = to.Search.GeocodingResponse.Locations.FirstOrDefault().AccessRoadCoordinate,
+                From = from.Search.GeocodingResponse.Locations.FirstOrDefault()?.AccessRoadCoordinate,
+                To = to.Search.GeocodingResponse.Locations.FirstOrDefault()?.AccessRoadCoordinate,
                 Pref = PrefEnum.Fastest
             });
-            Assert.True(result.TotalLength == 1441);
+            Assert.Equal(1423, result.TotalLength);
         }
     }
 }

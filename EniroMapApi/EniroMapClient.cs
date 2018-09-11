@@ -90,7 +90,7 @@ namespace EniroMapApi
 					throw new ArgumentOutOfRangeException();
 			}
 
-			queryString += $"&waypoints={routingParameters.To.X},{routingParameters.To.Y};{routingParameters.From.X},{routingParameters.From.Y}";
+			queryString += $"&waypoints={routingParameters.From.X},{routingParameters.From.Y};{routingParameters.To.X},{routingParameters.To.Y}";
 			queryString += $"&instr=false";
 			queryString += $"&geo=false";
 			queryString += $"&contentType=json";
