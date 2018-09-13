@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using System.Globalization;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace EniroMapApi.Geocoding
+namespace EniroMapApi.Search
 {
-   public partial class GeocodingResult
+    public partial class SearchResult
     {
         [JsonProperty("search")]
         public Search Search { get; set; }
@@ -23,33 +23,36 @@ namespace EniroMapApi.Geocoding
 
         [JsonProperty("onMove")]
         public string OnMove { get; set; }
-
-        [JsonProperty("center")]
-        public double[] Center { get; set; }
-
-        [JsonProperty("zoom")]
-        public long Zoom { get; set; }
-
-        [JsonProperty("bbox")]
-        public Bbox Bbox { get; set; }
-    }
-
-    public partial class Bbox
-    {
-        [JsonProperty("type")]
-        public string Type { get; set; }
-
-        [JsonProperty("coordinates")]
-        public double[][] Coordinates { get; set; }
     }
 
     public partial class Search
     {
-        [JsonProperty("geo")]
-        public Geo Geo { get; set; }
+        [JsonProperty("rsug")]
+        public Rsug Rsug { get; set; }
     }
 
-    public partial class Geo
+    public partial class Rsug
+    {
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        [JsonProperty("features")]
+        public Feature[] Features { get; set; }
+
+        [JsonProperty("offset")]
+        public long Offset { get; set; }
+
+        [JsonProperty("pageSize")]
+        public long PageSize { get; set; }
+
+        [JsonProperty("hits")]
+        public long Hits { get; set; }
+
+        [JsonProperty("totalHits")]
+        public long TotalHits { get; set; }
+    }
+
+    public partial class Feature
     {
         [JsonProperty("type")]
         public string Type { get; set; }
@@ -58,61 +61,21 @@ namespace EniroMapApi.Geocoding
         [JsonConverter(typeof(ParseStringConverter))]
         public long Id { get; set; }
 
-        [JsonProperty("geometry")]
-        public Geometry Geometry { get; set; }
+        [JsonProperty("indexType")]
+        public string IndexType { get; set; }
 
-        [JsonProperty("mapPoint")]
-        public Geometry MapPoint { get; set; }
-
-        [JsonProperty("routePoint")]
-        public Geometry RoutePoint { get; set; }
-
-        [JsonProperty("address")]
-        public Address Address { get; set; }
-
-        [JsonProperty("navigation")]
-        public bool Navigation { get; set; }
-
-        [JsonProperty("wpCount")]
-        public long WpCount { get; set; }
-
-        [JsonProperty("ypCount")]
-        public long YpCount { get; set; }
+        [JsonProperty("sug")]
+        public string Sug { get; set; }
     }
 
-    public partial class Address
+    public partial class SearchResult
     {
-        [JsonProperty("label")]
-        public string Label { get; set; }
-
-        [JsonProperty("postcode")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long Postcode { get; set; }
-
-        [JsonProperty("area")]
-        public string Area { get; set; }
-
-        [JsonProperty("type")]
-        public string Type { get; set; }
-    }
-
-    public partial class Geometry
-    {
-        [JsonProperty("type")]
-        public string Type { get; set; }
-
-        [JsonProperty("coordinates")]
-        public double[] Coordinates { get; set; }
-    }
-
-    public partial class GeocodingResult
-    {
-        public static GeocodingResult FromJson(string json) => JsonConvert.DeserializeObject<GeocodingResult>(json, Converter.Settings);
+        public static SearchResult FromJson(string json) => JsonConvert.DeserializeObject<SearchResult>(json, Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this GeocodingResult self) => JsonConvert.SerializeObject(self, Converter.Settings);
+        public static string ToJson(this SearchResult self) => JsonConvert.SerializeObject(self, Converter.Settings);
     }
 
     internal static class Converter

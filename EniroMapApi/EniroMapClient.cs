@@ -1,75 +1,55 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+using EniroMapApi.Geocoding;
+using EniroMapApi.Routing;
+using EniroMapApi.Search;
 using Newtonsoft.Json;
 
 namespace EniroMapApi
 {
 	public class EniroMapClient : IEniroMapClient
 	{
-		private HttpClient _httpClient;
-
+		private HttpClient _httpClientGeo;
+	    private HttpClient _httpClientRoute;
 		public EniroMapClient()
 		{
-			_httpClient = new HttpClient(new HttpClientHandler()
+			_httpClientGeo = new HttpClient(new HttpClientHandler()
 			{
 			
 			})
 			{
-				BaseAddress = new Uri("https://map.eniro.no/api/")
+				BaseAddress = new Uri("https://mapsearch.eniro.com/")
 			};
+		    _httpClientRoute = new HttpClient(new HttpClientHandler()
+		    {
+			
+		    })
+		    {
+		        BaseAddress = new Uri("https://route.enirocdn.com/")
+		    };
 		}
 
-		public async Task<GeocodingResult> GeocodingAsync(GeocodingParameters geocodingParameters)
+		public async Task<GeocodingResult> GeocodingAsync(string addressQuery)
 		{
 
-			var queryString = "";
-			switch (geocodingParameters.Country)
-			{
-				case CountryEnum.SE:
-					queryString += "?country=se";
-					break;
-				case CountryEnum.DK:
-					queryString += "?country=dk";
-					break;
-				case CountryEnum.FI:
-					queryString += "?country=fi";
-					break;
-				case CountryEnum.NO:
-					queryString += "?country=no";
-					break;
-				case CountryEnum.ALL:
-					queryString += "?country=all";
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
-
-			switch (geocodingParameters.Type)
-			{
-				case TypeEnum.Any:
-					queryString += "&type=any";
-					break;
-				case TypeEnum.Address:
-					queryString += "&type=address";
-					break;
-				case TypeEnum.Street:
-					queryString += "&type=street";
-					break;
-				case TypeEnum.city:
-					queryString += "&type=city";
-					break;
-				default:
-					queryString += "&type=any";
-					break;
-			}
-
-			queryString += $"&name={geocodingParameters.Name}";
-			queryString += $"&contentType=json";
-			var result = await _httpClient.GetStringAsync($"geocode/{queryString}");
-			return JsonConvert.DeserializeObject<GeocodingResult>(result);
+			var queryString = "search.json";
+		    queryString += $"?profile=dk_krak";
+		    queryString += $"&index=rsug";
+			queryString += $"&q={System.Net.WebUtility.UrlEncode(addressQuery)}";
+			
+			var searchResultJson = await _httpClientGeo.GetStringAsync($"search/{queryString}");
+            var searchResult = JsonConvert.DeserializeObject<SearchResult>(searchResultJson);
+		    
+		    queryString = "search.json";
+		    queryString += $"?profile=dk_krak";
+		    queryString += $"&index=geo";
+		    queryString += $"&id={searchResult.Search.Rsug.Features.Select(x => x.Id).FirstOrDefault()}";
+			
+		    var geocodingResultJson = await _httpClientGeo.GetStringAsync($"search/{queryString}");
+		    var geocodingResult = JsonConvert.DeserializeObject<GeocodingResult>(geocodingResultJson);
+		    return geocodingResult;
 
 
 		}
@@ -77,24 +57,24 @@ namespace EniroMapApi
 		public async Task<RoutingResult> RoutingAsync(RoutingParameters routingParameters)
 		{
 
-			var queryString = "";
+			var queryString = "route.json?";
 			switch (routingParameters.Pref)
 			{
 				case PrefEnum.Fastest:
-					queryString += "?pref=fastest";
+					queryString += "pref=fastest";
 					break;
 				case PrefEnum.Shortest:
-					queryString += "?pref=shortest";
+					queryString += "pref=shortest";
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
 
-			queryString += $"&waypoints={routingParameters.From.X},{routingParameters.From.Y};{routingParameters.To.X},{routingParameters.To.Y}";
-			queryString += $"&instr=false";
-			queryString += $"&geo=false";
-			queryString += $"&contentType=json";
-			var result = await _httpClient.GetStringAsync($"route/{queryString}");
+			queryString += $"&waypoints={routingParameters.From[0]},{routingParameters.From[1]};{routingParameters.To[0]},{routingParameters.To[1]}";
+			queryString += $"&instr=true";
+			queryString += $"&res=305";
+		
+			var result = await _httpClientRoute.GetStringAsync($"route/{queryString}");
 			return JsonConvert.DeserializeObject<RoutingResult>(result);
 
 
