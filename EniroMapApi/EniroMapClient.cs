@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using EniroMapApi.Geocoding;
 using EniroMapApi.Routing;
-using EniroMapApi.Search;
 using Newtonsoft.Json;
 
 namespace EniroMapApi
@@ -36,22 +35,17 @@ namespace EniroMapApi
 
 			var queryString = "search.json";
 		    queryString += $"?profile=dk_krak";
-		    queryString += $"&index=rsug";
-			queryString += $"&q={System.Net.WebUtility.UrlEncode(addressQuery)}";
-			
-			var searchResultJson = await _httpClientGeo.GetStringAsync($"search/{queryString}");
-            var searchResult = JsonConvert.DeserializeObject<SearchResult>(searchResultJson);
-		    
-		    queryString = "search.json";
-		    queryString += $"?profile=dk_krak";
 		    queryString += $"&index=geo";
-		    queryString += $"&id={searchResult.Search.Rsug.Features.Select(x => x.Id).FirstOrDefault()}";
+		    queryString += $"&q={System.Net.WebUtility.UrlEncode(addressQuery)}";
 			
 		    var geocodingResultJson = await _httpClientGeo.GetStringAsync($"search/{queryString}");
 		    var geocodingResult = JsonConvert.DeserializeObject<GeocodingResult>(geocodingResultJson);
+		    if (geocodingResult.Search.Geo.Type == "FeatureCollection")
+		    {
+		        geocodingResult.Search.Geo.RoutePoint =
+		            geocodingResult.Search.Geo.Features.FirstOrDefault()?.RoutePoint;
+		    }
 		    return geocodingResult;
-
-
 		}
 
 		public async Task<RoutingResult> RoutingAsync(RoutingParameters routingParameters)

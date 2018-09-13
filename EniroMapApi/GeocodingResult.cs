@@ -7,7 +7,7 @@ using Newtonsoft.Json.Converters;
 
 namespace EniroMapApi.Geocoding
 {
-   public partial class GeocodingResult
+    public partial class GeocodingResult
     {
         [JsonProperty("search")]
         public Search Search { get; set; }
@@ -47,6 +47,12 @@ namespace EniroMapApi.Geocoding
     {
         [JsonProperty("geo")]
         public Geo Geo { get; set; }
+
+        [JsonProperty("yp")]
+        public Geo Yp { get; set; }
+
+        [JsonProperty("wp")]
+        public Geo Wp { get; set; }
     }
 
     public partial class Geo
@@ -78,6 +84,46 @@ namespace EniroMapApi.Geocoding
 
         [JsonProperty("ypCount")]
         public long YpCount { get; set; }
+
+        [JsonProperty("features")]
+        public Feature[] Features { get; set; }
+
+        [JsonProperty("offset")]
+        public long Offset { get; set; }
+
+        [JsonProperty("pageSize")]
+        public long PageSize { get; set; }
+
+        [JsonProperty("hits")]
+        public long Hits { get; set; }
+
+        [JsonProperty("totalHits")]
+        public long TotalHits { get; set; }
+    }
+
+    public partial class Feature
+    {
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        [JsonProperty("id")]
+        [JsonConverter(typeof(ParseStringConverter))]
+        public long Id { get; set; }
+
+        [JsonProperty("geometry")]
+        public Geometry Geometry { get; set; }
+
+        [JsonProperty("mapPoint")]
+        public Geometry MapPoint { get; set; }
+
+        [JsonProperty("routePoint")]
+        public Geometry RoutePoint { get; set; }
+
+        [JsonProperty("address")]
+        public Address Address { get; set; }
+
+        [JsonProperty("navigation")]
+        public bool Navigation { get; set; }
     }
 
     public partial class Address
@@ -99,11 +145,13 @@ namespace EniroMapApi.Geocoding
     public partial class Geometry
     {
         [JsonProperty("type")]
-        public string Type { get; set; }
+        public TypeEnum Type { get; set; }
 
         [JsonProperty("coordinates")]
         public double[] Coordinates { get; set; }
     }
+
+    public enum TypeEnum { Point };
 
     public partial class GeocodingResult
     {
@@ -122,6 +170,7 @@ namespace EniroMapApi.Geocoding
             MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
             DateParseHandling = DateParseHandling.None,
             Converters = {
+                TypeEnumConverter.Singleton,
                 new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
             },
         };
@@ -156,5 +205,39 @@ namespace EniroMapApi.Geocoding
         }
 
         public static readonly ParseStringConverter Singleton = new ParseStringConverter();
+    }
+
+    internal class TypeEnumConverter : JsonConverter
+    {
+        public override bool CanConvert(Type t) => t == typeof(TypeEnum) || t == typeof(TypeEnum?);
+
+        public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.Null) return null;
+            var value = serializer.Deserialize<string>(reader);
+            if (value == "Point")
+            {
+                return TypeEnum.Point;
+            }
+            throw new Exception("Cannot unmarshal type TypeEnum");
+        }
+
+        public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
+        {
+            if (untypedValue == null)
+            {
+                serializer.Serialize(writer, null);
+                return;
+            }
+            var value = (TypeEnum)untypedValue;
+            if (value == TypeEnum.Point)
+            {
+                serializer.Serialize(writer, "Point");
+                return;
+            }
+            throw new Exception("Cannot marshal type TypeEnum");
+        }
+
+        public static readonly TypeEnumConverter Singleton = new TypeEnumConverter();
     }
 }

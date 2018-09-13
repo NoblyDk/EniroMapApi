@@ -9,19 +9,24 @@ namespace EniroMapApi.Tests
         public async void TestGeocoding()
         {
             var result = await new EniroMapClient().GeocodingAsync("Falen 18F, Odense C");
-            Assert.NotNull(result);
+            Assert.NotNull(result.Search.Geo.RoutePoint);
         }
-
+        [Fact]
+        public async void TestGeocoding2()
+        {
+            var result = await new EniroMapClient().GeocodingAsync("Falen 18F, 5000 Odense C");
+            Assert.NotNull(result.Search.Geo.RoutePoint);
+        }
         [Fact]
         public async void TestRouting()
         {
             var client = new EniroMapClient();
             var from = await client.GeocodingAsync("Ravsted Hovedgade 36, Bylderup-Bov");
-            var to = await client.GeocodingAsync("Sydvang 1, Sønderborg");
+            var to = await client.GeocodingAsync("Sydvang 1, 6400 Sønderborg");
             var result = await client.RoutingAsync(new RoutingParameters()
             {
-                From = from.Search.Geo.RoutePoint.Coordinates,
-                To = to.Search.Geo.RoutePoint.Coordinates,
+                From = from?.Search?.Geo?.RoutePoint?.Coordinates,
+                To = to?.Search?.Geo?.RoutePoint?.Coordinates,
                 Pref = PrefEnum.Fastest
             });
             var distance = result.RouteGeometries.Features.Select(x => x.Properties.Length).FirstOrDefault();
@@ -37,8 +42,8 @@ namespace EniroMapApi.Tests
             var to = await client.GeocodingAsync("Baagøes Alle 15, Svendborg");
             var result = await client.RoutingAsync(new RoutingParameters()
             {
-                From = from.Search.Geo.RoutePoint.Coordinates,
-                To = to.Search.Geo.RoutePoint.Coordinates,
+                From = from?.Search?.Geo?.RoutePoint?.Coordinates,
+                To = to?.Search?.Geo?.RoutePoint?.Coordinates,
                 Pref = PrefEnum.Fastest
             });
             var distance = result.RouteGeometries.Features.Select(x => x.Properties.Length).FirstOrDefault();
