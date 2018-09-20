@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -38,7 +39,13 @@ namespace EniroMapApi
 		    queryString += $"&index=geo";
 		    queryString += $"&q={System.Net.WebUtility.UrlEncode(addressQuery)}";
 			
-		    var geocodingResultJson = await _httpClientGeo.GetStringAsync($"search/{queryString}");
+            var response = await _httpClientGeo.GetAsync($"search/{queryString}");
+		    var geocodingResultJson = await response.Content.ReadAsStringAsync();
+		    if (!response.IsSuccessStatusCode)
+		    {
+		        throw new Exception($"Error calling {_httpClientGeo.BaseAddress.AbsoluteUri}, Response was {response.StatusCode} - {geocodingResultJson}");
+		    }
+		   
 		    var geocodingResult = JsonConvert.DeserializeObject<GeocodingResult>(geocodingResultJson);
 		    if (geocodingResult.Search.Geo.Type == "FeatureCollection")
 		    {
@@ -64,11 +71,17 @@ namespace EniroMapApi
 					throw new ArgumentOutOfRangeException();
 			}
 
-			queryString += $"&waypoints={routingParameters.From[0]},{routingParameters.From[1]};{routingParameters.To[0]},{routingParameters.To[1]}";
+			queryString += $"&waypoints={routingParameters.From[0].ToString(CultureInfo.InvariantCulture)},{routingParameters.From[1].ToString(CultureInfo.InvariantCulture)};{routingParameters.To[0].ToString(CultureInfo.InvariantCulture)},{routingParameters.To[1].ToString(CultureInfo.InvariantCulture)}";
 			queryString += $"&instr=true";
 			queryString += $"&res=305";
 		
-			var result = await _httpClientRoute.GetStringAsync($"route/{queryString}");
+		    var response = await _httpClientRoute.GetAsync($"route/{queryString}");
+		    var result = await response.Content.ReadAsStringAsync();
+		    if (!response.IsSuccessStatusCode)
+		    {
+		        throw new Exception($"Error calling {_httpClientRoute.BaseAddress.AbsoluteUri}, Response was {response.StatusCode} - {result}");
+		    }
+		 
 			return JsonConvert.DeserializeObject<RoutingResult>(result);
 
 
