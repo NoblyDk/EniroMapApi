@@ -62,10 +62,10 @@ namespace EniroMapApi
 			switch (routingParameters.Pref)
 			{
 				case PrefEnum.Fastest:
-					queryString += "pref=fastest";
+					queryString += "pref=FASTEST";
 					break;
 				case PrefEnum.Shortest:
-					queryString += "pref=shortest";
+					queryString += "pref=SHORTEST";
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();

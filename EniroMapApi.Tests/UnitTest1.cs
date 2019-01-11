@@ -49,5 +49,20 @@ namespace EniroMapApi.Tests
             var distance = result.RouteGeometries.Features.Select(x => x.Properties.Length).FirstOrDefault();
             Assert.Equal(59206, distance);
         }
+        [Fact]
+        public async void TestRouting3()
+        {
+            var client = new EniroMapClient();
+            var from = await client.GeocodingAsync("Kongshøj Alle 29, Kerteminde");
+            var to = await client.GeocodingAsync("Baagøes Alle 15, Svendborg");
+            var result = await client.RoutingAsync(new RoutingParameters()
+            {
+                From = from?.Search?.Geo?.RoutePoint?.Coordinates,
+                To = to?.Search?.Geo?.RoutePoint?.Coordinates,
+                Pref = PrefEnum.Shortest
+            });
+            var distance = result.RouteGeometries.Features.Select(x => x.Properties.Length).FirstOrDefault();
+            Assert.NotEqual(59206, distance);
+        }
     }
 }
