@@ -44,11 +44,14 @@ namespace EniroMapApi
             }
 
             queryString += $"&waypoints={routingParameters.From.X.ToString(CultureInfo.InvariantCulture)},{routingParameters.From.Y.ToString(CultureInfo.InvariantCulture)};{routingParameters.To.X.ToString(CultureInfo.InvariantCulture)},{routingParameters.To.Y.ToString(CultureInfo.InvariantCulture)}";
-            queryString += $"&instr=false";
-            queryString += $"&geo=false";
+            queryString += $"&instr=true";
+            queryString += $"&geo=true";
+            queryString += $"&res=200";
+
             queryString += $"&contentType=json";
             queryString += $"&partnerId={_eniroMapClientConfiguration.PartnerId}";
-            return JsonConvert.DeserializeObject<EniroRoutingResult>(await _httpClient.GetStringAsync(queryString));
+            var apiResult = await _httpClient.GetStringAsync(queryString);
+            return JsonConvert.DeserializeObject<EniroRoutingResult>(apiResult);
         }
     }
 }

@@ -43,9 +43,23 @@ namespace EniroMapApi.Tests
                 Pref = PrefEnum.Fastest
             });
             var distance = result.TotalLength;
-            Assert.Equal(49902, distance);
+            Assert.Equal(51351, distance);
         }
-
+        [Fact]
+        public async void TestRouting42()
+        {
+            var client = new EniroMapClient(_eniroHttpClient);
+            var from = await client.GeocodingAsync("Munkholmvej 20, Holbæk");
+            var to = await client.GeocodingAsync("Ingemannsvej 30, Slagelse");
+            var result = await client.RoutingAsync(new RoutingParameters()
+            {
+                From = from.Search.GeocodingResponse.Locations.FirstOrDefault().AccessRoadCoordinate,
+                To = to?.Search?.GeocodingResponse?.Locations.FirstOrDefault().AccessRoadCoordinate,
+                Pref = PrefEnum.Fastest
+            });
+            var distance = result.TotalLength;
+            Assert.Equal(47500, distance);
+        }
 
         [Fact]
         public async void TestRouting2()
