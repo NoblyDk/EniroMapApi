@@ -74,7 +74,7 @@ namespace EniroMapApi.Tests
                 Pref = PrefEnum.Fastest
             });
             var distance = result.TotalLength;
-            Assert.Equal(59646, distance);
+            Assert.Equal(59206, distance);
         }
         [Fact]
         public async void TestRouting3()
@@ -89,7 +89,7 @@ namespace EniroMapApi.Tests
                 Pref = PrefEnum.Shortest
             });
             var distance = result.TotalLength;
-            Assert.Equal(52404, distance);
+            Assert.Equal(52229, distance);
         }
     }
 }
