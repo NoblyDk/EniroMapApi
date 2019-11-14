@@ -31,6 +31,39 @@ namespace EniroMapApi.Tests
             Assert.NotEmpty(result.Search.GeocodingResponse.Locations);
         }
         [Fact]
+        public async void TestRouting_Ferry_route_but_avoid_it_2()
+        {
+            var client = new EniroMapClient(_eniroHttpClient);
+            var from = await client.GeocodingAsync("Nørrealle 35, 7980 Vils");
+            var to = await client.GeocodingAsync("Stolbjergvej 8, 9500 Hobro");
+            var result = await client.RoutingAsync(new RoutingParameters()
+            {
+                From = from.Search.GeocodingResponse.Locations.FirstOrDefault().AccessRoadCoordinate,
+                To = to?.Search?.GeocodingResponse?.Locations.FirstOrDefault().AccessRoadCoordinate,
+                Pref = PrefEnum.Shortest
+            });
+            var distance = result.TotalLength;
+            Assert.Equal(86963, distance);
+        }
+
+        [Fact]
+        public async void TestRouting_Ferry_route_but_avoid_it()
+        {
+            var client = new EniroMapClient(_eniroHttpClient);
+            var from = await client.GeocodingAsync("Aalborgvej 69, 9370 Hals");
+            var to = await client.GeocodingAsync("Højgårdsvej 11, 9640 Farsø");
+            var result = await client.RoutingAsync(new RoutingParameters()
+            {
+                From = from.Search.GeocodingResponse.Locations.FirstOrDefault().AccessRoadCoordinate,
+                To = to?.Search?.GeocodingResponse?.Locations.FirstOrDefault().AccessRoadCoordinate,
+                Pref = PrefEnum.Shortest
+            });
+            var distance = result.TotalLength;
+            Assert.Equal(82365, distance);
+        }
+
+
+        [Fact]
         public async void TestRouting()
         {
             var client = new EniroMapClient(_eniroHttpClient);
