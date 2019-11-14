@@ -47,7 +47,7 @@ namespace EniroMapApi
             queryString += $"&instr=true";
             queryString += $"&geo=true";
             queryString += $"&res=200";
-
+            queryString += $"&avoid=ferry";
             queryString += $"&contentType=json";
             queryString += $"&partnerId={_eniroMapClientConfiguration.PartnerId}";
             var apiResult = await _httpClient.GetStringAsync(queryString);
