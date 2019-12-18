@@ -21,8 +21,12 @@ namespace EniroMapApi
 
         public async Task<EniroGeoResult> GeocodingAsync(string addressQuery)
         {
-            var queryString = $"/api/geocode?country=dk&name={System.Net.WebUtility.UrlEncode(addressQuery)}&contentType=json&hits=1&partnerId={_eniroMapClientConfiguration.PartnerId}";
+            var queryString = $"/api/geocode?country=dk&name={System.Net.WebUtility.UrlEncode(addressQuery)}&contentType=json&hits=1";
 
+            if (!string.IsNullOrWhiteSpace(_eniroMapClientConfiguration.PartnerId))
+            {
+                queryString += $"&partnerId={_eniroMapClientConfiguration.PartnerId}";
+            }
             return JsonConvert.DeserializeObject<EniroGeoResult>(await _httpClient.GetStringAsync(queryString));
         }
 
@@ -56,7 +60,11 @@ namespace EniroMapApi
             }
 
             queryString += $"&contentType=json";
-            queryString += $"&partnerId={_eniroMapClientConfiguration.PartnerId}";
+            if (!string.IsNullOrWhiteSpace(_eniroMapClientConfiguration.PartnerId))
+            {
+                queryString += $"&partnerId={_eniroMapClientConfiguration.PartnerId}";
+            }
+      
             var apiResult = await _httpClient.GetStringAsync(queryString);
             return JsonConvert.DeserializeObject<EniroRoutingResult>(apiResult);
         }
